@@ -19,7 +19,6 @@ function createRay(x,y,dx,dy,color){//x,y are start, dx/dy are x and y component
     cast(bounds){
       const denom=dy*(bounds.x1-bounds.x2)-dx*(bounds.y1-bounds.y2)
       if(denom===0) return
-
       const t=((x-bounds.x1)*(bounds.y1-bounds.y2)-(y-bounds.y1)*(bounds.x1-bounds.x2))/denom
       const u= (dx*(y-bounds.y1)-dy*(x-bounds.x1))/denom
       if(u>0 && u<1 && t>0){

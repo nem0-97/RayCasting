@@ -15,11 +15,31 @@ document.addEventListener('DOMContentLoaded', function () {
   const raySources=[]
   raySources.push(new RaySource(600,100,-Math.PI,Math.PI,'red'))
   const walls=[]
-  walls.push(new Boundry(0,0,window.innerWidth,0,'black'))
-  walls.push(new Boundry(window.innerWidth,0,window.innerWidth,window.innerHeight,'black'))
-  walls.push(new Boundry(window.innerWidth,window.innerHeight,0,window.innerHeight,'black'))
-  walls.push(new Boundry(0,window.innerHeight,0,0,'black'))
+  const screenEdges=[]
+  let ses=false
+  /*drawing*/
+  function draw(){
+    world.setAttribute('width', window.innerWidth)//resize to window
+    world.setAttribute('height', window.innerHeight)
+    screenEdges.length=0
+    screenEdges.push(new Boundry(0,0,window.innerWidth,0,'black'))
+    screenEdges.push(new Boundry(window.innerWidth,0,window.innerWidth,window.innerHeight,'black'))
+    screenEdges.push(new Boundry(window.innerWidth,window.innerHeight,0,window.innerHeight,'black'))
+    screenEdges.push(new Boundry(0,window.innerHeight,0,0,'black'))
 
+    world.innerHTML = ''//clear
+    //draw
+    for(const wall of walls){
+      wall.draw(world)
+    }
+    for(const se of screenEdges){
+      se.draw(world)
+    }
+    for(const rs of raySources){
+      rs.cast(walls.concat(screenEdges))
+      rs.draw(world)
+    }
+  }
   let tool
   /*key event handler*/
   document.addEventListener('keydown', event => {
@@ -35,6 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const mousePos=mouseLocation (event)
     if(tool==='Source'){
       raySources.push(new RaySource(mousePos.x,mousePos.y,Number(document.getElementById('min').value),Number(document.getElementById('max').value),document.getElementById('col').value))
+      draw()
     }else if(tool==='Obstacle'){
       pt1=mousePos
     }
@@ -43,22 +64,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const mousePos=mouseLocation (event)
     if(tool==='Obstacle'){
       walls.push(new Boundry(pt1.x,pt1.y,mousePos.x,mousePos.y,document.getElementById('col').value))
+      draw()
     }
   })
 
   /*draw loop*/
-  function draw(){
-    world.setAttribute('width', window.innerWidth)//resize to window
-    world.setAttribute('height', window.innerHeight)
-    world.innerHTML = ''//clear
-    for(const wall of walls){
-      wall.draw(world)
-    }
-
-    for(const rs of raySources){
-      rs.cast(walls)
-      rs.draw(world)
-    }
-  }
-  setInterval(draw, 3)//draw every 33 milliseconds
+  draw()
+  //setInterval(draw, 3)//draw every 33 milliseconds
 })
